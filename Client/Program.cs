@@ -6,6 +6,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<UniversitieRepository>();
+builder.Services.AddScoped<AccountRepository>();
+builder.Services.AddScoped<EmployeeRepository>();
 
 var app = builder.Build();
 

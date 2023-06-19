@@ -105,23 +105,28 @@ public class UniversitieController : Controller
 
         return View();
     }
-    
-    [HttpDelete]
+
+    [HttpGet]
     public async Task<IActionResult> Delete(int id)
     {
-        var Results = await repository.Get(id);
-        var universities = new Universitie();
+        var result = await repository.Get(id);
+        var universitie = result?.Data;
 
-        if (Results.Data?.Id is null)
+        return View(universitie);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> GuardianDelete(int id)
+    {
+        var result = await repository.Delete(id);
+        if (result.Code == 200)
         {
-            return View(universities);
-        }
-        else
-        {
-            universities.Id = Results.Data.Id;
-            universities.Name = Results.Data.Name;
+            TempData["Success"] = "Data berhasil dihapus";
+            return RedirectToAction(nameof(Index));
         }
 
-        return View(universities);
+        var universities = await repository.Get(id);
+        return View("Delete", universities?.Data);
     }
 }
