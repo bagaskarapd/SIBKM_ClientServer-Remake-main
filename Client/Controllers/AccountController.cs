@@ -2,8 +2,6 @@
 using API.ViewModels;
 using Client.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using NuGet.Protocol.Core.Types;
-using System.Reflection;
 
 namespace Client.Controllers;
 public class AccountController : Controller
@@ -27,14 +25,22 @@ public class AccountController : Controller
         var result = await repository.Login(login);
         if (result.Code == 200)
         {
-            return RedirectToAction("Index", "Home");
+            HttpContext.Session.SetString("JWToken", result.Data);
+            return RedirectToAction("index","home");  
         }
         return View();
     }
 
+    [HttpGet("/Logout")]
+    public IActionResult Logout()
+    {
+        HttpContext.Session.Clear();
+        return Redirect("/Account/Login");
+    }
+
     public async Task<IActionResult> Index()
     {
-        //localhost/universitie
+        //localhost/university/
         var Results = await repository.Get();
         var universities = new List<Account>();
 
@@ -45,6 +51,7 @@ public class AccountController : Controller
 
         return View(universities);
     }
+
     [HttpGet]
     public IActionResult Create()
     {
@@ -55,6 +62,7 @@ public class AccountController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Account account)
     {
+        
         var result = await repository.Post(account);
         if (result.Code == 200)
         {
@@ -68,5 +76,20 @@ public class AccountController : Controller
         }
 
         return View();
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Details(int id)
+    {
+        //localhost/university/
+        var Results = await repository.Get(id);
+        //var universities = new University();
+
+        //if (Results != null)
+        //{
+        //    universities = Results.Data;
+        //}
+
+        return View(Results.Data);
     }
 }

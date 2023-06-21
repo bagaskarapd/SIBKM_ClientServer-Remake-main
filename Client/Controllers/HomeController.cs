@@ -1,8 +1,10 @@
 ﻿using Client.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
 namespace Client.Controllers;
+[Authorize]
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
@@ -15,6 +17,13 @@ public class HomeController : Controller
     public IActionResult Index()
     {
         return View();
+    }
+
+    [AllowAnonymous]
+    [HttpGet("/Unauthorized")]
+    public IActionResult Unauthorized()
+    {
+        return View("401");
     }
 
     public IActionResult Privacy()
